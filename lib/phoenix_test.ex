@@ -28,6 +28,10 @@ defmodule PhoenixTest do
     [Wallaby](https://hexdocs.pm/wallaby/readme.html).
   """
 
+  defmodule FunctionUnavailableError do
+    defexception [:message]
+  end
+
   alias PhoenixTest.Driver
   alias PhoenixTest.Assertions
 
@@ -170,6 +174,12 @@ defmodule PhoenixTest do
   ```
   """
   defdelegate submit_form(session, selector, data), to: Driver
+
+  @doc """
+  Opens the browser in LiveView tests.
+  """
+  defdelegate preview(session), to: Driver
+  defdelegate preview(session, open_fun), to: Driver
 
   @doc """
   Assert helper to ensure an element with given CSS selector and `text` is

@@ -8,4 +8,6 @@ defprotocol PhoenixTest.Driver do
   def click_button(session, selector, text)
   def fill_form(session, selector, form_data)
   def submit_form(session, selector, form_data)
+  def preview(session)
+  def preview(session, open_fun)
 end

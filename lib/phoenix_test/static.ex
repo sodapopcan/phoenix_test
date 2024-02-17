@@ -135,6 +135,10 @@ defimpl PhoenixTest.Driver, for: PhoenixTest.Static do
     |> submit_active_form()
   end
 
+  def preview(_session, _open_fun \\ nil) do
+    raise PhoenixTest.FunctionUnavailableError, "preview/1 may not be used in controller tests"
+  end
+
   defp maybe_redirect(conn, session) do
     case conn do
       %{status: 302} ->

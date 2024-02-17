@@ -156,6 +156,16 @@ defimpl PhoenixTest.Driver, for: PhoenixTest.Live do
     phx_change != nil && phx_change != ""
   end
 
+  def preview(%{view: view} = session) do
+    Phoenix.LiveViewTest.open_browser(view)
+    session
+  end
+
+  def preview(%{view: view} = session, open_fun) do
+    Phoenix.LiveViewTest.open_browser(view, open_fun)
+    session
+  end
+
   defp maybe_redirect({:error, {:redirect, %{to: path}}}, session) do
     PhoenixTest.visit(session.conn, path)
   end

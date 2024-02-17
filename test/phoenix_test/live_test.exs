@@ -333,4 +333,24 @@ defmodule PhoenixTest.LiveTest do
       end
     end
   end
+
+  describe "preview" do
+    setup do
+      open_fun = fn path ->
+        assert content = File.read!(path)
+        assert content =~ ~r/<h1.*LiveView main page/
+
+        path
+      end
+
+      %{open_fun: open_fun}
+    end
+
+    test "opens the browser", %{conn: conn, open_fun: open_fun} do
+      conn
+      |> visit("/live/index")
+      |> preview(open_fun)
+      |> assert_has("h1", "LiveView main page")
+    end
+  end
 end

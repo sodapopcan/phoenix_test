@@ -246,4 +246,16 @@ defmodule PhoenixTest.StaticTest do
                    end
     end
   end
+
+  describe "preview" do
+    test "raises when used with static html", %{conn: conn} do
+      assert_raise PhoenixTest.FunctionUnavailableError,
+                   "preview/1 may not be used in controller tests",
+                   fn ->
+                     conn
+                     |> visit("/page/index")
+                     |> preview()
+                   end
+    end
+  end
 end
