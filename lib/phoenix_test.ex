@@ -187,4 +187,9 @@ defmodule PhoenixTest do
   It'll raise an error if any elements that match selector and text are found.
   """
   defdelegate refute_has(session, selector, text), to: Assertions
+
+  @doc """
+  TODO
+  """
+  defdelegate within(session, selector, fun), to: Assertions
 end

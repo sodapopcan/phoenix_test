@@ -20,9 +20,9 @@ defmodule PhoenixTest.Assertions do
     end
   end
 
-  def assert_has(session, selector, text) do
-    session
-    |> PhoenixTest.Driver.render_html()
+  def assert_has(session_or_element, selector, text) do
+    session_or_element
+    |> render_html()
     |> Query.find(selector, text)
     |> case do
       {:found, _found} ->
@@ -48,7 +48,7 @@ defmodule PhoenixTest.Assertions do
           """
     end
 
-    session
+    session_or_element
   end
 
   def refute_has(session, "title", text) do
@@ -66,7 +66,7 @@ defmodule PhoenixTest.Assertions do
 
   def refute_has(session, selector, text) do
     session
-    |> PhoenixTest.Driver.render_html()
+    |> render_html()
     |> Query.find(selector, text)
     |> case do
       {:not_found, _} ->
@@ -92,6 +92,27 @@ defmodule PhoenixTest.Assertions do
     end
 
     session
+  end
+
+  def within(session, selector, fun) do
+    session
+    |> render_html()
+    |> Query.find(selector)
+    |> case do
+      {:found, element} ->
+        fun.(element)
+
+      :not_found ->
+        raise "Helpful error message"
+    end
+  end
+
+  defp render_html(session) when is_struct(session) do
+    PhoenixTest.Driver.render_html(session)
+  end
+
+  defp render_html(element) do
+    Floki.raw_html(element)
   end
 
   defp format_found_elements(elements) when is_list(elements) do

@@ -164,6 +164,17 @@ defmodule PhoenixTest.AssertionsTest do
         conn |> assert_has("#multiple-items", "Frodo")
       end
     end
+
+    test "asserts on children", %{conn: conn} do
+      conn
+      |> visit("/page/index")
+      |> within("#multiple-items", fn element ->
+        element
+        |> assert_has("li:nth-child(1)", "Aragorn")
+        |> assert_has("li:nth-child(2)", "Legolas")
+        |> assert_has("li:nth-child(3)", "Gimli")
+      end)
+    end
   end
 
   describe "refute_has/3" do
