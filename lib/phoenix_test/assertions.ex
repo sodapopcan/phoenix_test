@@ -94,6 +94,14 @@ defmodule PhoenixTest.Assertions do
     session
   end
 
+  def assert_order(session, child_selector, texts) when is_list(texts) do
+    texts
+    |> Enum.with_index()
+    |> Enum.each(fn {text, index} ->
+      assert_has(session, "#{child_selector}:nth-child(#{index + 1})", text)
+    end)
+  end
+
   defp format_found_elements(elements) when is_list(elements) do
     Enum.map_join(elements, "\n", &Html.raw/1)
   end

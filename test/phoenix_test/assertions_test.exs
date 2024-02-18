@@ -261,4 +261,16 @@ defmodule PhoenixTest.AssertionsTest do
       end
     end
   end
+
+  describe "assert_order" do
+    test "asserts order", %{conn: conn} do
+      conn
+      |> visit("/page/index")
+      |> assert_order("#multiple-items li", ["Aragorn", "Legola", "Gimli"])
+    end
+
+    test "takes an additional specifier" do
+
+    end
+  end
 end
