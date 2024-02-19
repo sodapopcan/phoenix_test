@@ -248,14 +248,22 @@ defmodule PhoenixTest.StaticTest do
   end
 
   describe "preview" do
-    test "raises when used with static html", %{conn: conn} do
-      assert_raise PhoenixTest.FunctionUnavailableError,
-                   "preview/1 may not be used in controller tests",
-                   fn ->
-                     conn
-                     |> visit("/page/index")
-                     |> preview()
-                   end
+    setup do
+      open_fun = fn path ->
+        assert content = File.read!(path)
+        assert content =~ ~r/<h1.*LiveView main page/
+
+        path
+      end
+
+      %{open_fun: open_fun}
+    end
+
+    test "opens the browser ", %{conn: conn, open_fun: open_fun} do
+      conn
+      |> visit("/live/index")
+      |> preview(open_fun)
+      |> assert_has("h1", "LiveView main page")
     end
   end
 end

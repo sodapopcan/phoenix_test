@@ -135,8 +135,46 @@ defimpl PhoenixTest.Driver, for: PhoenixTest.Static do
     |> submit_active_form()
   end
 
-  def preview(_session, _open_fun \\ nil) do
-    raise PhoenixTest.FunctionUnavailableError, "preview/1 may not be used in controller tests"
+  def preview(session, open_fun \\ &open_with_system_cmd/1) do
+    html = session.conn.resp_body
+
+    html =
+      Floki.parse_document!(html)
+      |> Floki.traverse_and_update(fn
+        {"link", [track, {"rel", "stylesheet"}, {"href", path}], []} ->
+          path = "file://" <> Path.join([File.cwd!(), "priv", "static", path])
+
+          {"link", [track, {"rel", "stylesheet"}, {"href", path}], []}
+        el -> el
+      end)
+      |> Floki.raw_html()
+
+    dbg(html)
+
+    path = Path.join([System.tmp_dir!(), "phx-test#{System.unique_integer()}.html"])
+    File.write!(path, html)
+
+    open_fun.(path)
+  end
+
+  defp open_with_system_cmd(path) do
+    {cmd, args} =
+      case :os.type() do
+        {:win32, _} ->
+          {"cmd", ["/c", "start", path]}
+
+        {:unix, :darwin} ->
+          {"open", [path]}
+
+        {:unix, _} ->
+          if System.find_executable("cmd.exe") do
+            {"cmd.exe", ["/c", "start", path]}
+          else
+            {"xdg-open", [path]}
+          end
+      end
+
+    System.cmd(cmd, args)
   end
 
   defp maybe_redirect(conn, session) do
